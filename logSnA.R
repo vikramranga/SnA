@@ -1,31 +1,23 @@
 ### Libraries first ###
 
-library(ggplot2)
-library(scales)
-library(deming) 
-library(readxl)
-library(gridExtra)
+library(pacman)
+p_load(tidyverse, deming, scales)
 
-#sa_rel_old <- read.csv("E:/Literature Survey Badlands/slope catchment area threshold/SA_data_1.csv")
-sa_rel <- read_excel("E:/Literature Survey Badlands/slope catchment area threshold/SA_data_1.xlsx")
+sa_rel <- readxl::read_xlsx("SA_data_1.xlsx")
 sa_rel <- sa_rel[complete.cases(sa_rel),]
-#sa_rel_1 <- subset(sa_rel, status = 'Complete') works same as above one.
-sa_rel$S_mm <- sa_rel$S/100
-sa_rel$A_ha <- sa_rel$'CA_(m2)'/10000
-sa_rel$sqft_criterion <- sa_rel$Av_width * sa_rel$Av_depth  
-sa_rel <- subset(sa_rel, sqft_criterion > 929) # critical cross section must be over 929cm2 hence the condition.
-sa_rel$w_d_all <- "WDR = All"
-#sa_rel$a2s <- sa_rel$A_ha * sa_rel$A_ha * sa_rel$A_ha
+#Changing this computation using tidyverse style
+sa_rel <- sa_rel |> 
+  mutate(S_mm = S/100,
+        A_ha = `CA_(m2)`/10000,
+        sqft_criterion = Av_width * Av_depth)
+
+sa_rel <- sa_rel |> 
+  filter(sqft_criterion > 929) |> # critical cross section must be over 929cm2 hence the condition.
+  mutate(w_d_all = "WDR = All")
 sa_rel_ltone <- subset(sa_rel, w.d <= 1)
 sa_rel_gtone <- subset(sa_rel, w.d >= 1)
 
-###############################################################################################################################################################
-###############################################################################################################################################################
-###############################################################################################################################################################
-###############################################################################################################################################################
-###############################################################################################################################################################
-
-# Functions ---------------------------------------------------------------
+#<--------------------------- Functions --------------------------------->
 
 # function to plot logarithmic minor breaks
 # from https://stackoverflow.com/questions/30179442/plotting-minor-breaks-on-a-log-scale-with-ggplot
@@ -74,8 +66,6 @@ lm_eqn <- function(df){
   as.character(as.expression(eq));
 }
 
-#p1 <- p + geom_text(x = 25, y = 300, label = lm_eqn(df), parse = TRUE)
-
 # Let's first see the correlation between log10(S_mm) & log10(A_ha)
 cor.test(log10(sa_rel$S_mm), log10(sa_rel$A_ha))
 
@@ -93,14 +83,8 @@ cor.test(log10(sa_rel$S_mm), log10(sa_rel$A_ha))
 
 # Calculate the linear regression formula:
 
-#################################################################################
-#
-#
-# Fit a deming regression
-#
-#
-#################################################################################
 
+#<---------------------- Fit a deming regression --------------------------->
 
 dem_reg_all <- deming(log10(sa_rel$S_mm) ~ log10(sa_rel$A_ha))
 print(dem_reg_all)
@@ -167,13 +151,8 @@ cor.test(log10(sa_rel_ltone_1$S_mm), log10(sa_rel_ltone_1$A_ha))
 #0.3844384 
 
 
-#################################################################################
-#
-#
-# Fit a deming regression for WDR < 1 - here gully no. 18 is added.
-#
-#
-#################################################################################
+#<-------------- Fit a deming regression for WDR < 1 - here gully no. 18 is added.--------------->
+
 
 deming_reg_ltone_1 <- deming(log10(sa_rel_ltone_1$S_mm)~ log10(sa_rel_ltone_1$A_ha))
 
