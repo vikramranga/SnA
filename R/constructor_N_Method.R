@@ -4,11 +4,14 @@
 
 # This is proto-type and I will keep on adding things to it
 as.sna <- function(tab, sVar = "s", aVar = "a"){
+  suppressMessages(
   require(tidyverse)
+  )
   if(!is.data.frame(tab) & !is_tibble(tab)) stop('Please provide the dataset in data frame or tibble format')
   tab <- rename(tab, S = sVar, A = aVar)
   class(tab) <- "sna"
   return(tab)
+  
 }
 
 
