@@ -16,7 +16,6 @@ as.sna <- function(tab, sVar = "s", aVar = "a"){
 
 
 #Define the generics: print and summary
-
 print.sna <- function(sna){
   cat("Summary of S: ", "\n")
   print(summary(sna$S))
@@ -24,8 +23,7 @@ print.sna <- function(sna){
   print(summary(sna$A))
 }
 
-
-
 #Example
 a <- data.frame(s = runif(10), a = runif(10), b = runif(10))
 a1 <- as.sna(tab = a)
+a1
