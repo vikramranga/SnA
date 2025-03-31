@@ -4,7 +4,7 @@
 ##
 #
 
-snaData <- readxl::read_xlsx('Data_SnA_ajijul.xlsx')
+snaData <- readxl::read_xlsx('Data/Data_SnA_ajijul.xlsx')
 
 #<--------------------------- Functions --------------------------------->
 
